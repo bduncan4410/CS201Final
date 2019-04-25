@@ -10,7 +10,7 @@ public class OrderItem extends EntityBase
 	 */
 	public OrderItem()
 	{
-		super();
+		
 	}
 	
 	/**
@@ -47,7 +47,11 @@ public class OrderItem extends EntityBase
 	}
 	public void setQuantity(int quantity)
 	{
-		this.quantity = quantity;
+		if( quantity > 0)
+		{
+			this.quantity = quantity;
+	
+		}
 	}
 	
 	
