@@ -2,9 +2,10 @@
  * A repository object for managing CRUD operations for Address objects
  */
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
-import org.hibernate.Query;
 
 /**
  * The AddressRepo extends RepoBase and is typed to an Address object.  
@@ -12,9 +13,7 @@ import org.hibernate.Query;
  * @author calmond
  *
  */
-
-//https://www.mkyong.com/hibernate/hibernate-query-examples-hql/
-public class AddressRepo extends RepoBase<Address> implements Repository<Address>
+public class AddressRepo extends JDBCRepoBase<Address> implements Repository<Address>
 {
 	/**
 	 * Default constructor.  It sets the Schema to Person. and the Table to Address for the repository
@@ -32,17 +31,31 @@ public class AddressRepo extends RepoBase<Address> implements Repository<Address
 	 */
 	public Address get(int ID)
 	{
-		Address getAddress = new Address();
-		
+		Statement statement = null;
+		ResultSet rs = null;
+		Address address = new Address();
+	
 		try
 		{
-			getAddress = (Address) session.get(Address.class, ID);
+			String sql = "select * from " + schema + table + " where ID = " + ID + ";";
+			statement = conn.createStatement();
+			rs = statement.executeQuery(sql);
+			if (rs != null)
+			{
+				rs.next();				
+				address.setID(ID);
+				address.setAddress(rs.getString("Address"));
+				address.setCity(rs.getString("City"));
+				address.setState(rs.getString("State"));
+				address.setZip(rs.getInt("Zip"));
+				return address;
+			}
 		}
-		catch (Exception ex)
+		catch (SQLException sqlex)
 		{
-			System.out.println(ex.getMessage());
+			System.out.println(sqlex.getMessage());
 		}
-		return getAddress;
+		return null;
 	}
 	
 	/**
@@ -52,83 +65,100 @@ public class AddressRepo extends RepoBase<Address> implements Repository<Address
 	 */
 	public Address getFirst()
 	{
+		Statement statement = null;
+		ResultSet rs = null;
 		Address address = new Address();
 		
 		try
 		{
-			Query query = session.createQuery("from Address order by ID");
-			List list = query.list();
-			
-			if (list.size() > 0)
-			{
-				address = (Address) list.remove(0);				
-			}
-			else
-			{
-				address = null;
-			}
+			// top 1 is T-SQL specific
+			String sql = "select top 1 * from " + getSchema() + getTable() + ";";
+			statement = conn.createStatement();
+			rs = statement.executeQuery(sql);
+			rs.next();
+			address.setID(rs.getInt("ID"));
+			address.setAddress(rs.getString("Address"));
+			address.setCity(rs.getString("City"));
+			address.setState(rs.getString("State"));
+			address.setZip(rs.getInt("Zip"));
+			return address;
 		}
-		catch (Exception ex)
+		catch (SQLException sqlex)
 		{
-			System.out.println(ex.getMessage());
+			System.out.println(sqlex.getMessage());
 		}
-		return address;
+		return null;
 	}
 	
 	/**
-	 * getCollection will retrieve a group of Addresses that match a given HQL statement
-	 *   Any valid where clause can be passed. 
-	 *   <br/>
-	 *   Examples (see search documentation also):
-	 *   String matching: from Address where address like '%1600%'
-	 *   Zip code: where from Address where Zip > 33333
-	 * @return ArrayList with records matching the hql query
+	 * Retrieves all records from the datastore in one ArrayList
+	 * getAll is not a safe call on very large record sets and should be removed from the 
+	 *   interface/implementation if dealing with very large sets of data
+	 * @return All Address records out of the datastore in an ArrayList, or an empty ArrayList if there are no records
 	 */
-	public ArrayList<Address> getCollection(String hql)
-	{	
+	public ArrayList<Address> getAll()
+	{
 		ArrayList<Address> list = new ArrayList<Address>();
+		Statement statement = null;
+		ResultSet rs = null;
+		
 		try
 		{
-			Query query = session.createQuery(hql);
-			list = new ArrayList<Address>(query.list());
+			String sql = "select * from " + getSchema() + getTable() + ";";
+			statement = conn.createStatement();
+			rs = statement.executeQuery(sql);
+			while(rs.next())
+			{
+				// Adding a new Address object to the list from the resultset data
+				list.add((Address) new Address(rs.getString("Address"), 
+											   rs.getString("City"), 
+											   rs.getString("State"),
+											   rs.getInt("Zip")
+											  ).setID(rs.getInt("ID")));				
+			}
 		}
-		catch (Exception ex)
+		catch (SQLException sqlex)
 		{
-			System.out.println(ex.getMessage());
+			System.out.println(sqlex.getMessage());
 		}
 		return list;
-	}
+	}	
 
 	/**
 	 * Add an address record to the datastore.
-	 * This uses the session saveOrUpdate method to create a new record or update an existing record 
+	 * This uses the getters of the addr parameter to build an 
+	 *   insert SQL string and execute it
 	 * @return The primary key assigned by the database or -1 if the insert was unsuccessful 
 	 */
 	@Override
 	public int add(Address addr)
 	{
-		int addressID = -1;
-		
 		try
 		{
-			session.saveOrUpdate(addr);
-			transaction.commit();
+			int primaryKey = 0;
+			String sql = "INSERT INTO " + getSchema() + getTable();
+			sql += " (Address, City, State, Zip) VALUES('";
+			sql += addr.getAddress() + "', '" + addr.getCity() + "', '" + addr.getState() + "', " + addr.getZip() + ");";
 			
-			if (addr.getID() > 0)
-			{
-				addressID = addr.getID();
-			}
+			Statement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			ResultSet rs = null;
+			statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+			rs = statement.getGeneratedKeys();
+			rs.next();
+			primaryKey = rs.getInt(1);
+			return primaryKey; // return the new PK
 		} 
-		catch (Exception ex)
+		catch (SQLException ex)
 		{
 			ex.printStackTrace();
 		}
-		return addressID;
+		
+		return -1;
 	}
 	
 	/**
 	 * Update an existing address record in the datastore.
-	 *   This uses the session saveOrUpdate method to create a new record or update an existing record 
+	 *   This uses the getters of the addr parameter to build an 
 	 *   update SQL string and execute it
 	 * @return true if successful, false if not
 	 */
@@ -137,11 +167,17 @@ public class AddressRepo extends RepoBase<Address> implements Repository<Address
 	{
 		try
 		{
-			session.saveOrUpdate(addr);
-			transaction.commit();
+			Statement statement = conn.createStatement();
+			String sql = "UPDATE " + getSchema() + getTable() + " SET ";
+			sql += "Address = '" + addr.getAddress();
+			sql += "', City = '" + addr.getCity();
+			sql += "', State = '" + addr.getState();
+			sql += "', Zip = '" + addr.getZip();
+			sql += "' where ID = " + addr.getID()  + ";";
+			statement.execute(sql);
 			return true;
 		} 
-		catch (Exception ex)
+		catch (SQLException ex)
 		{
 			ex.printStackTrace();
 		}
@@ -157,15 +193,15 @@ public class AddressRepo extends RepoBase<Address> implements Repository<Address
 	@Override
 	public boolean delete(Address addr)
 	{
-		// None of the others needed this, but delete did
-		transaction.begin();
 		try
 		{
-			session.delete(addr);
-			transaction.commit();
+			// Using a concurrent update ResultSet
+			Statement statement = conn.createStatement();
+			String sql = "DELETE FROM Person.Address where ID=" + addr.getID() + ";";
+			statement.execute(sql);
 			return true;
 		} 
-		catch (Exception ex)
+		catch (SQLException ex)
 		{
 			ex.printStackTrace();
 		}
@@ -174,7 +210,45 @@ public class AddressRepo extends RepoBase<Address> implements Repository<Address
 	}
 	
 	/**
-	 * search will do an HQL lookup matching an address record with the where clause provided.
+	 * getCollection will retrieve a group of Addresses that match a given SQL select statement
+	 *   Any valid where clause can be passed. 
+	 *   <br/>
+	 *   Examples:
+	 *   String matching: Select * from Person.Address where address like '%1600%'
+	 *   Zip code: where Select * from Person.Address where Zip > 33333
+	 * @return ArrayList with records matching the sql select query
+	 */
+	public ArrayList<Address> getCollection(String sql)
+	{	
+		Address address = new Address();
+		ArrayList<Address> list = new ArrayList<Address>();
+		Statement statement = null;
+		ResultSet rs = null;			
+		
+		try
+		{
+			statement = conn.createStatement();
+			rs = statement.executeQuery(sql);
+			while(rs.next())
+			{
+				address.setID(rs.getInt("ID"));
+				address.setAddress(rs.getString("Address"));
+				address.setCity(rs.getString("City"));
+				address.setState(rs.getString("State"));
+				address.setZip(rs.getInt("Zip"));
+				
+				list.add(address);				
+			}
+		}
+		catch (SQLException sqlex)
+		{
+			System.out.println(sqlex.getMessage());
+		}
+		return list;
+	}
+	
+	/**
+	 * search will do an SQL lookup matching an address record with the where clause provided.
 	 * Calls getCollection to retrieve results, and returns an ArrayList of the Address instances
 	 *   that match.
 	 * <br/>
@@ -183,13 +257,13 @@ public class AddressRepo extends RepoBase<Address> implements Repository<Address
 	 *   Zip code: where Zip > 33333
 	 * @return ArrayList with records matching the sql where clause parameter
 	 */
-	public ArrayList<Address> search(String term)
+	public ArrayList<Address> search(String whereClause)
 	{
-		ArrayList<Address> addresses = new ArrayList<Address>();
-		// no select in HQL.  from <Object> where <class field> is syntax
-		String hql = "from Address " + term;		
+		ArrayList<Address> addresses;
+		
+		String sql = "SELECT * FROM " + getSchema() + getTable() + " " + whereClause + ";";
 		// Calling getCollection with the above SQL
-		addresses = new ArrayList<Address>( getCollection(hql) );
+		addresses = new ArrayList<Address>( getCollection(sql) );
 		
 		return addresses;
 	}
