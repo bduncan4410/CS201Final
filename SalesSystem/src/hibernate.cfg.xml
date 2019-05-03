@@ -2,15 +2,17 @@
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
                                          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
- <session-factory>
+ <session-factory name="">
   <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
   <property name="hibernate.connection.url">jdbc:sqlserver://localhost;DatabaseName=SalesSystem</property>
   <property name="hibernate.dialect">org.hibernate.dialect.SQLServer2012Dialect</property>
   <property name="hibernate.connection.username">sa</property>
   <property name="hibernate.connection.password">Password!</property>
-  <property name="hibernate.default_schema">Person</property>
+  <property name="hibernate.default_schema">[Order]</property>
   <property name="hibernate.show_sql">false</property>
   <property name="hibernate.hbm2ddl.auto">update</property>
-  <mapping resource="Address.hbm.xml"/>
+  <mapping class="Order" resource="Order.hbm.xml"/>
+  <mapping class="OrderItem" resource="OrderItem.hbm.xml"/>
+  <mapping class="Item" resource="Item.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
