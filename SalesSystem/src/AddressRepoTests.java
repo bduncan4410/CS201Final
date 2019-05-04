@@ -11,9 +11,9 @@ class AddressRepoTests
 	void addressDefaultConstructorTest()
 	{
 		Address testAddress = new Address();
-		assertTrue(testAddress.getAddress().isBlank());
-		assertTrue(testAddress.getCity().isBlank());
-		assertTrue(testAddress.getState().isBlank());
+		assertTrue(testAddress.getAddress().isEmpty());
+		assertTrue(testAddress.getCity().isEmpty());
+		assertTrue(testAddress.getState().isEmpty());
 		assertTrue(testAddress.getZip() == 0);
 		assertTrue(testAddress.getID() == 0);
 	}

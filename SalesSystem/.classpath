@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="jars/dom4j-2.1.1.jar"/>
 	<classpathentry kind="lib" path="jars/FastInfoset-1.2.15.jar"/>
 	<classpathentry kind="lib" path="jars/hibernate-commons-annotations-5.1.0.Final.jar"/>
-	<classpathentry kind="lib" path="jars/hibernate-core-5.4.2.Final.jar"/>
+	<classpathentry kind="lib" path="jars/hibernate-core-5.4.2.Final.jar" sourcepath="C:/Users/bdunc/.m2/repository/org/hibernate/hibernate-core/5.4.2.Final/hibernate-core-5.4.2.Final-sources.jar"/>
 	<classpathentry kind="lib" path="jars/istack-commons-runtime-3.0.7.jar"/>
 	<classpathentry kind="lib" path="jars/jandex-2.0.5.Final.jar"/>
 	<classpathentry kind="lib" path="jars/javassist-3.24.0-GA.jar"/>
