@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 1, 2019 11:05:46 AM by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <joined-subclass name="OrderItem" extends="EntityBase" table="ORDERITEM" lazy="false">
+        <key>
+            <column name="ID" />
+        </key>
+        <property name="orderID" type="int">
+            <column name="ORDERID" />
+        </property>
+        <property name="itemID" type="int">
+            <column name="ITEMID" />
+        </property>
+        <property name="quantity" type="int">
+            <column name="QUANTITY" />
+        </property>
+    </joined-subclass>
+</hibernate-mapping>

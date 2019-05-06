@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 1, 2019 11:05:46 AM by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping schema="[Order]">
+ <joined-subclass extends="EntityBase" lazy="false" name="Item" table="ITEM">
+  <key>
+   <column name="ID"/>
+  </key>
+  <property generated="never" lazy="false" name="name" type="java.lang.String">
+   <column name="NAME"/>
+  </property>
+  <property generated="never" lazy="false" name="price" type="double">
+   <column name="PRICE"/>
+  </property>
+  <property generated="never" lazy="false" name="description" type="java.lang.String">
+   <column name="DESCRIPTION"/>
+  </property>
+  <property generated="never" lazy="false" name="inventory" type="int">
+   <column name="INVENTORY"/>
+  </property>
+ </joined-subclass>
+</hibernate-mapping>
