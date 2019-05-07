@@ -175,7 +175,7 @@ public class SalesRepRepo extends JDBCRepoBase<SalesRep> implements Repository<S
 				salesRep.setRegion(rs.getString("Region"));
 				
 				
-				list.add(SalesRep);				
+				list.add(salesRep);				
 			}
 		}
 		catch (SQLException sqlex)
