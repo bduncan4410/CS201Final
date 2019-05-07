@@ -32,7 +32,7 @@ public class SalesRepRepo extends JDBCRepoBase<SalesRep> implements Repository<S
 				salesRep.setPersonID(rs.getInt("PersonID"));
 				salesRep.setRegion(rs.getString("Region"));
 				
-				return SalesRep;
+				return salesRep;
 			}
 		}
 		catch (SQLException sqlex)
@@ -56,10 +56,10 @@ public class SalesRepRepo extends JDBCRepoBase<SalesRep> implements Repository<S
 			statement = conn.createStatement();
 			rs = statement.executeQuery(sql);
 			rs.next();
-			SalesRep.setID(rs.getInt("ID"));
-			SalesRep.setPersonID(rs.getInt("PersonID"));
-			SalesRep.setRegion(rs.getString("Region"));
-			return SalesRep;
+			salesRep.setID(rs.getInt("ID"));
+			salesRep.setPersonID(rs.getInt("PersonID"));
+			salesRep.setRegion(rs.getString("Region"));
+			return salesRep;
 		}
 		catch (SQLException sqlex)
 		{
@@ -195,4 +195,5 @@ public class SalesRepRepo extends JDBCRepoBase<SalesRep> implements Repository<S
 		reps = new ArrayList<SalesRep>( getCollection(sql) );
 		
 		return reps;
+	}
 }

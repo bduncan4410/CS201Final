@@ -4,7 +4,7 @@ public class Person extends EntityBase
 	private int addressID;
 	private String firstName = "";
 	private String lastName = "";
-	private int phoneNumber  = 0;
+	private String phoneNumber  = "";
 
 	/**
 	 * Default constructor
@@ -20,7 +20,7 @@ public class Person extends EntityBase
 	 * @param lastName Last name of person
 	 * @param phoneNumber The persons phone number
 	 */
-	public Person(int addressID, String firstName, String lastName, int phoneNumber)
+	public Person(int addressID, String firstName, String lastName, String phoneNumber)
 	{
 		
 		setAddressID(addressID);
@@ -44,7 +44,7 @@ public class Person extends EntityBase
 		return lastName;
 	}
 
-	public int getPhoneNumber()
+	public String getPhoneNumber()
 	{
 		return phoneNumber;
 	}
@@ -64,9 +64,9 @@ public class Person extends EntityBase
 		this.lastName = lastName;
 	}
 
-	public void setPhoneNumber(int phoneNumber)
+	public void setPhoneNumber(String string)
 	{
-		this.phoneNumber = phoneNumber;
+		this.phoneNumber = string;
 	}
 
 	@Override

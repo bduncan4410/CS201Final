@@ -2,7 +2,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PersonRepo extends JDBCRepoBase<Person> implements Repository<Person>
 {
@@ -27,13 +26,13 @@ public class PersonRepo extends JDBCRepoBase<Person> implements Repository<Perso
 			if (rs != null)
 			{
 				rs.next();				
-				Person.setID(ID);
-				Person.setAddressID(rs.getInt("AddressID"));
-				Person.setFirstName(rs.getString("FirstName"));
-				Person.setLastName(rs.getString("LastName"));
-				Person.setPhoneNumber(rs.getInt("PhoneNumber"));
+				person.setID(ID);
+				person.setAddressID(rs.getInt("AddressID"));
+				person.setFirstName(rs.getString("FirstName"));
+				person.setLastName(rs.getString("LastName"));
+				person.setPhoneNumber(rs.getString("PhoneNumber"));
 				
-				return Person;
+				return person;
 			}
 		}
 		catch (SQLException sqlex)
@@ -48,7 +47,7 @@ public class PersonRepo extends JDBCRepoBase<Person> implements Repository<Perso
 	{
 		Statement statement = null;
 		ResultSet rs = null;
-		Person Person = new Person();
+		Person person = new Person();
 		
 		try
 		{
@@ -57,13 +56,13 @@ public class PersonRepo extends JDBCRepoBase<Person> implements Repository<Perso
 			statement = conn.createStatement();
 			rs = statement.executeQuery(sql);
 			rs.next();
-			Person.setID(rs.getInt("ID"));
-			Person.setAddressID(rs.getInt("AddressID"));
-			Person.setFirstName(rs.getString("FirstName"));
-			Person.setLastName(rs.getString("LastName"));
-			Person.setPhoneNumber(rs.getInt("PhoneNumber"));
+			person.setID(rs.getInt("ID"));
+			person.setAddressID(rs.getInt("AddressID"));
+			person.setFirstName(rs.getString("FirstName"));
+			person.setLastName(rs.getString("LastName"));
+			person.setPhoneNumber(rs.getString("PhoneNumber"));
 			
-			return Person;
+			return person;
 		}
 		catch (SQLException sqlex)
 		{
@@ -87,7 +86,7 @@ public class PersonRepo extends JDBCRepoBase<Person> implements Repository<Perso
 			while(rs.next())
 			{
 				// Adding a new salesRep object to the list from the results set data
-				list.add((Person) new Person(rs.getInt("AddressID"),  rs.getString("FirstName"), rs.getString("LastNane"), rs.getInt("PhoneNumber")).setID(rs.getInt("ID")));				
+				list.add((Person) new Person(rs.getInt("AddressID"),  rs.getString("FirstName"), rs.getString("LastNane"), rs.getString("PhoneNumber")).setID(rs.getInt("ID")));				
 			}
 		}
 		catch (SQLException sqlex)
@@ -146,7 +145,7 @@ public class PersonRepo extends JDBCRepoBase<Person> implements Repository<Perso
 	{
 		try
 		{
-			// Using a concurrent update ResultSet
+			
 			Statement statement = conn.createStatement();
 			String sql = "DELETE FROM Person.Person where ID=" + addr.getID() + ";";
 			statement.execute(sql);
@@ -196,8 +195,8 @@ public class PersonRepo extends JDBCRepoBase<Person> implements Repository<Perso
 		ArrayList<Person> list;
 		
 		String sql = "SELECT * FROM " + getSchema() + "." + getTable() + " " + whereClause + ";";
-		// Calling getCollection with the above SQL
 		list = new ArrayList<Person>( getCollection(sql) );
 		
 		return list;
+	}
 }
