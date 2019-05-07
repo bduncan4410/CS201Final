@@ -1,9 +1,8 @@
-import java.sql.Date;
 
 public class Order extends EntityBase
 {
 	private int customerID;
-	private Date date;
+	private String date;
 	
 	
 	
@@ -17,19 +16,19 @@ public class Order extends EntityBase
 	
 	/**
 	 * @param customerID
-	 * @param date
+	 * @param date2
 	 */
-	public Order(int customerID, Date date)
+	public Order(int customerID, String date2)
 	{
 		setCustomerID(customerID);
-		setDate(date);
+		setDate(date2);
 	}
 
 	public int getCustomerID()
 	{
 		return customerID;
 	}
-	public Date getDate()
+	public String getDate()
 	{
 		return date;
 	}
@@ -37,8 +36,8 @@ public class Order extends EntityBase
 	{
 		this.customerID = customerID;
 	}
-	public void setDate(Date date)
+	public void setDate(String date2)
 	{
-		this.date = date;
+		this.date = date2;
 	}
 }
